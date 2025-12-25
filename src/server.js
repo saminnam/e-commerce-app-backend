@@ -12,7 +12,7 @@ mongoose.connect("mongodb://localhost:27017/ecommerce");
 // Routers
 // const authRoutes = require("./routes/authRoutes");
 // app.use("/api/auth", authRoutes); 
-app.use("/api/reseller", require("./routes/resellerRoutes"));
+// app.use("/api/reseller", require("./routes/resellerRoutes"));
 app.use("/api/products", require("./routes/productRoutes"));
 const orderRoutes = require("./routes/orderRoutes");
 app.use("/api/orders", orderRoutes);
