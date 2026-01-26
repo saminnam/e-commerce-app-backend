@@ -1,34 +1,30 @@
-// models/Order.js
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema(
   {
     customer: {
-      name: String,
-      email: String,
-      phone: String,
+      name: { type: String, required: true },
+      email: { type: String, required: true },
+      phone: { type: String, required: true },
     },
 
-    address: {
-      street: String,
-      city: String,
-      postalCode: String,
+    shippingAddress: {
+      street: { type: String, required: true },
+      city: { type: String, required: true },
+      postalCode: { type: String, required: true },
     },
 
     products: [
       {
-        productId: {
-          type: String, // ✅ NOT ObjectId
-        },
-
-        productName: String,
-        quantity: Number,
-        price: Number,
+        productId: { type: String, required: true },
+        productName: { type: String, required: true },
+        quantity: { type: Number, required: true },
+        price: { type: Number, required: true },
       },
     ],
 
-    totalAmount: Number,
-    totalProducts: Number,
+    totalAmount: { type: Number, required: true },
+    totalProducts: { type: Number, required: true },
 
     status: {
       type: String,
@@ -38,4 +34,5 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Order", orderSchema);
+const Order = mongoose.model("Order", orderSchema);
+export default Order;

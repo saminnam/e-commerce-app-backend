@@ -1,15 +1,4 @@
-// // models/Product.js
-// const mongoose = require("mongoose");
-
-// const productSchema = new mongoose.Schema({
-//   name: String,
-//   price: Number,
-//   image: String,
-// });
-
-// module.exports = mongoose.model("Product", productSchema);
-
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema({
   name: String,
@@ -28,7 +17,8 @@ const productSchema = new mongoose.Schema({
   category: String,
   author: String,
   publisher: String,
-  releasedDate: String
+  releasedDate: String,
 });
 
-module.exports = mongoose.model("Product", productSchema);
+const Product = mongoose.model("Product", productSchema);
+export default Product;

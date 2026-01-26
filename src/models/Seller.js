@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const sellerSchema = new mongoose.Schema({
   fullName: String,
@@ -13,7 +13,8 @@ const sellerSchema = new mongoose.Schema({
   accountNumber: String,
   ifsc: String,
   category: String,
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("Seller", sellerSchema);
+const Seller = mongoose.model("Seller", sellerSchema);
+export default Seller;

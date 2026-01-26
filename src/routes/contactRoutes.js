@@ -1,6 +1,7 @@
-const express = require("express");
+import express from "express";
+import Contact from "../models/contactModel.js";
+
 const router = express.Router();
-const Contact = require("../models/contactModel");
 
 router.post("/", async (req, res) => {
   try {
@@ -13,8 +14,11 @@ router.post("/", async (req, res) => {
     });
   } catch (error) {
     console.error("Error saving form:", error);
-    res.status(500).json({ success: false, message: "Failed to save data" });
+    res.status(500).json({
+      success: false,
+      message: "Failed to save data",
+    });
   }
 });
 
-module.exports = router;
+export default router; // ✅ VERY IMPORTANT
