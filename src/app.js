@@ -2,6 +2,9 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
+import bcrypt from "bcryptjs";
+import adminUser from "./models/AdminUser.js";
+import adminUserRoutes from "./routes/dashboardUsers.js";
 
 // USER SIDE ROUTES
 import authRoutes from "./routes/authRoutes.js";
@@ -9,6 +12,7 @@ import productRoutes from "./routes/productRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import sellerRoutes from "./routes/sellerRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
+import blogRoutes from "./routes/blogRoutes.js";
 
 // AUTH ROUTES
 import profileRoutes from "./routes/profileRoutes.js";
@@ -18,19 +22,57 @@ connectDB();
 
 const app = express();
 
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true,
-}));
-app.use(express.json());
+// ✅ Single CORS configuration
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://localhost:5174"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
-// USER (WEBSITE)
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// CREATE DEFAULT ADMIN
+const createAdmin = async () => {
+  try {
+    const adminEmail = "admin@example.com";
+    const existingAdmin = await adminUser.findOne({ email: adminEmail });
+
+    if (!existingAdmin) {
+      const hashedPassword = await bcrypt.hash("admin123", 10);
+
+      await adminUser.create({
+        name: "Admin",
+        email: adminEmail,
+        phone: "9999999999",
+        password: hashedPassword,
+        status: "active",
+      });
+
+      console.log("Default admin created:", adminEmail);
+    } else {
+      console.log("Admin already exists:", adminEmail);
+    }
+  } catch (error) {
+    console.error("Error creating admin:", error.message);
+  }
+};
+
+createAdmin();
+
+// ROUTES
+app.use("/api/admin-users", adminUserRoutes);
+
+app.use("/uploads", express.static("uploads"));
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/seller", sellerRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/blogs", blogRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);

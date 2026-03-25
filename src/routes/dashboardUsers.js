@@ -1,7 +1,7 @@
-const express = require("express");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const User = require("../models/adminUser");
+import express from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import User from "../models/AdminUser.js";
 
 const router = express.Router();
 
@@ -31,7 +31,6 @@ router.post("/", async (req, res) => {
 
     res.status(201).json({ message: "User created successfully", user });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -39,9 +38,9 @@ router.post("/", async (req, res) => {
 // GET USERS
 router.get("/", async (req, res) => {
   try {
-    const users = await User.find().select("-password"); // exclude passwords
+    const users = await User.find().select("-password");
     res.json({ data: users });
-  } catch (err) {
+  } catch {
     res.status(500).json({ message: "Failed to fetch users" });
   }
 });
@@ -51,38 +50,69 @@ router.delete("/:id", async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
     res.json({ message: "User deleted" });
-  } catch (error) {
+  } catch {
     res.status(500).json({ message: "Delete failed" });
   }
 });
 
-// LOGIN USER
+// LOGIN
+
+// LOGIN ROUTE
 router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-
-  if (!username || !password) {
-    return res.status(400).json({ message: "Email & password required" });
-  }
-
   try {
-    const user = await User.findOne({ email: username });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const { username, password } = req.body;
+
+    const user = await User.findOne({ email: username }); // or username field
+    if (!user) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
-
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
-    });
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
 
     res.json({
       message: "Login successful",
-      token,
-      user: { id: user._id, name: user.name, email: user.email },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
     });
   } catch (error) {
-    res.status(500).json({ message: "Login failed" });
+    res.status(500).json({ message: error.message });
   }
 });
+// router.post("/login", async (req, res) => {
+//   const { username, password } = req.body;
 
-module.exports = router;
+//   if (!username || !password) {
+//     return res.status(400).json({ message: "Email & password required" });
+//   }
+
+//   try {
+//     const user = await User.findOne({ email: username });
+//     if (!user) return res.status(404).json({ message: "User not found" });
+
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch)
+//       return res.status(401).json({ message: "Invalid credentials" });
+
+//     const token = jwt.sign(
+//       { id: user._id },
+//       process.env.JWT_SECRET,
+//       { expiresIn: "1d" }
+//     );
+
+//     res.json({
+//       message: "Login successful",
+//       token,
+//       user: { id: user._id, name: user.name, email: user.email },
+//     });
+//   } catch {
+//     res.status(500).json({ message: "Login failed" });
+//   }
+// });
+
+export default router; // ✅ THIS IS THE KEY LINE

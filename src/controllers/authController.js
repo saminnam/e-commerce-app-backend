@@ -23,9 +23,14 @@ export const signup = async (req, res) => {
     });
 
     // 4️⃣ Create JWT
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    // const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    //   expiresIn: "7d",
+    // });
+    const token = jwt.sign(
+      { id: user._id, role: "user" }, // Ensure 'role' is here!
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" },
+    );
 
     // 5️⃣ Send response
     res.status(201).json({
@@ -56,9 +61,14 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    // const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    //   expiresIn: "7d",
+    // });
+    const token = jwt.sign(
+      { id: user._id, role: "user" }, // Ensure 'role' is here!
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" },
+    );
 
     res.json({
       token,
